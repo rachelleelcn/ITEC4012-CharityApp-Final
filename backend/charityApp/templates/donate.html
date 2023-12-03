@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyCharityHub</title>
+</head>
+<body>
+    {# navigation #}
+    <nav>
+        <p><a href="/explore">Explore</a></p>
+        <p><a href="/account">Account</a></p>
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Logout">
+        </form>
+    </nav>
+
+    <h2>Donation successful</h2>
+    {# donation feedback #}
+    <p>Thank you for donating ${{ amount }} to {{ community.cotm_id }}.</p>
+    {# return to community #}
+    <a href="{{ link }}"><input type="button" value="Back to {{ community.name }}"></a>
+
+</body>
+</html>

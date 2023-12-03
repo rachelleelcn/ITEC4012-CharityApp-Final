@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyCharityHub</title>
+</head>
+<body>
+    <h1>Welcome to MyCharityHub</h1>
+    <h2>Login</h2>
+     <form method="post" >
+         {% csrf_token %}
+         {# show login form #}
+         {{ form.as_p }}
+         {# redirect user to page if 'next' parameter exists #}
+         {% if request.GET.next %}
+             <input type="hidden" name="next" value="{{ request.GET.next }}">
+         {% endif %}
+
+         <input type="submit" value="Login">
+    </form>
+    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+</body>
+</html>

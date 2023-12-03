@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyCharityHub</title>
+</head>
+<body>
+    {# navigation #}
+    <nav>
+        <p><a href="/explore">Explore</a></p>
+        <p><a href="/account">Account</a></p>
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Logout">
+        </form>
+    </nav>
+
+    <h2>Explore</h2>
+
+    {# featured communities #}
+    <h3>Featured Communities</h3>
+    {% for community in communities %}
+        {% if community.featured %}
+            <div>
+                <h4>{{ community.name }}</h4>
+
+                {# member count for respective community #}
+                {% for item in communityUserCount %}
+                    {% if item.communityID == community.id %}
+                        <p>{{ item.count }} Members</p>
+                    {% endif %}
+                {% endfor %}
+
+                {# charity of the month for respective community #}
+                <p>Charity of the Month</p>
+                <p><strong>{{ community.cotm_id }}</strong></p>
+                {% for item in charities %}
+                    {% if item.name|stringformat:'s' == community.cotm_id|stringformat:'s' %}
+                        <p>{{ item.description }}</p>
+                        <img src="../static/{{ item.image }}" width="120"/>
+                    {% endif %}
+                {% endfor %}
+
+                <br>
+                {# view respective community #}
+                <a href="/explore/{{ community.name|lower|cut:" " }}"><input type="button" value="View"></a>
+            </div>
+            <br>
+        {% endif %}
+    {% endfor %}
+
+    {# non-featured communities #}
+    <h3>Our Communities</h3>
+    {% for community in communities %}
+        {% if community.featured == False %}
+            <div>
+                <h4>{{ community.name }}</h4>
+
+                {# member count for respective community #}
+                {% for item in communityUserCount %}
+                    {% if item.communityID == community.id %}
+                        <p>{{ item.count }} Members</p>
+                    {% endif %}
+                {% endfor %}
+
+                {# charity of the month for respective community #}
+                <p>Charity of the Month</p>
+                <p><strong>{{ community.cotm_id }}</strong></p>
+                {% for item in charities %}
+                    {% if item.name|stringformat:'s' == community.cotm_id|stringformat:'s' %}
+                        <p>{{ item.description }}</p>
+                        <img src="../static/{{ item.image }}" width="120"/>
+                    {% endif %}
+                {% endfor %}
+
+                <br>
+                {# view respective community #}
+                <a href="/explore/{{ community.name|lower|cut:" " }}"><input type="button" value="View"></a>
+            </div>
+            <br>
+        {% endif %}
+    {% endfor %}
+
+</body>
+</html>

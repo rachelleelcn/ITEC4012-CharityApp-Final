@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyCharityHub</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    {# navigation #}
+    <nav>
+        <p><a href="/explore">Explore</a></p>
+        <p><a href="/account">Account</a></p>
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Logout">
+        </form>
+    </nav>
+
+    {# community name and member count #}
+    <h2>{{ community.name }}</h2>
+    <p>{{ userCount }} Members</p>
+
+    {# join/leave community button #}
+    <form action="{% url 'joincommunity' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="prevPath" value="{{ request.path }}">
+        <input type="hidden" name="prevCommunity" value="{{ community }}">
+        {% if join %}
+            <input type="submit" name="status" value="Leave">
+        {% else %}
+            <input type="submit" name="status" value="Join">
+        {% endif %}
+    </form>
+    <br>
+
+    {# last month's donation result #}
+    <p>Last month's result ({{ lastHistory.date|date:"M" }})</p>
+    <p><strong>{{ lastHistory.charityName }}</strong></p>
+    <p>Donated ${{ lastHistory.amount }} in total</p>
+    <br>
+
+    {# charity of the month #}
+    <p>Charity of the Month</p>
+    <h2>{{ community.cotm_id }}</h2>
+    {% for item in charities %}
+        {% if item.charityID.name|stringformat:'s' == community.cotm_id|stringformat:'s' %}
+            <p>{{ item.charityID.location }}</p>
+            <p>{{ item.charityID.description }}</p>
+            <a href="{{ item.charityID.website }}">Visit website</a><br>
+            <img src="../../static/{{ item.charityID.image }}" width="120"/>
+        {% endif %}
+    {% endfor %}
+    <p>Progress: $ {{ community.progress }} collected</p>
+
+    {# donate to charity of the month #}
+    <div>
+        <form method="post" action="{% url 'donate' %}" id="payment-form">
+            {% csrf_token %}
+            {# get user info and donation amount #}
+            <input required type="text" name="name" placeholder="Full name">
+            <input required type="text" name="email" placeholder="Email">
+            <input type="number" name="amount" placeholder="Enter your amount" min="0.5" max="100000" step="0.01"><br>
+
+            {# get user card info using Stripe #}
+            <div class="form-row">
+                <label for="card-element">Credit or debit card</label>
+                <div id="card-element">
+                    {# Stripe element #}
+                </div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+
+            <input type="hidden" name="prevPath" value="{{ request.path }}">
+            <input type="hidden" name="prevCommunity" value="{{ community }}">
+            <button>Donate</button>
+        </form>
+    </div>
+    {# Stripe donate JS #}
+    <script>
+        // Create a Stripe client.
+        var stripe = Stripe('pk_test_51O6xJbGsQWfJ2K7eXFQIqVQMfaZC07vxvCWczu4lab1P1dpYyHNkDthF3pVJns5iYjP7p3wz0Df3yBDbCYAMDwdG00zRtZVQwF');
+
+        // Create an instance of Elements.
+        var elements = stripe.elements();
+
+        // Create an instance of the card Element.
+        var card = elements.create('card', {
+            hidePostalCode: true,
+            style: {
+                base: {
+                    color: '#595959',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            }
+        });
+
+        // Add an instance of the card Element into the `card-element` <div>.
+        card.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element.
+        card.addEventListener('change', function (event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Handle form submission.
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            stripe.createToken(card).then(function (result) {
+                if (result.error) {
+                    // Inform the user if there was an error.
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Send the token to your server.
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+
+        // Submit the form with the token ID.
+        function stripeTokenHandler(token) {
+            // Insert the token ID into the form, so it gets submitted to the server
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+        }
+    </script>
+
+    <br>
+
+    {# comment section #}
+    <h3>Words of Support</h3>
+    <div id="comments">
+        {% for comment in comments %}
+            <p><strong>{{ comment.username }}</strong></p>
+            <p>{{ comment.date }}</p>
+            <p>{{ comment.comment }}</p>
+        {% endfor %}
+    </div>
+    {# comment form #}
+    <form id="commentForm" method="post" action="{% url 'communitycomment' %}">
+        {% csrf_token %}
+        {{ commentform.as_p }}
+        <br>
+        <input type="hidden" name="prevPath" value="{{ request.path }}">
+        <input type="hidden" name="prevCommunity" value="{{ community }}">
+        <input type="submit" value="Share">
+    </form>
+
+
+    <br>
+    {# community-related charities #}
+    <h3>Our Charities</h3>
+    {% for item in charities %}
+        <div>
+            {% if item.charityID.name|stringformat:'s' != community.cotm_id|stringformat:'s' %}
+                <p><strong>{{ item.charityID.name }}</strong></p>
+                <p>{{ item.charityID.location }}</p>
+                <p>{{ item.charityID.description }}</p>
+                <img src="../../static/{{ item.charityID.image }}" width="120"/><br>
+                <a href="{{ item.charityID.website }}">Visit website</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+
+</body>
+</html>
