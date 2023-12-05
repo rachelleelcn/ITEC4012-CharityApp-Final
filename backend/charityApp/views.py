@@ -22,6 +22,23 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+
+
+
+class Donate(APIView):
+    def post(self, request):
+        amount = request.data.get("amount")
+        user = User.objects.get(id=1)
+        # add donation amount to Community's progress
+        community = Community.objects.get(id=1)
+        community.progress = community.progress + decimal.Decimal(float(amount))
+        community.save()
+        # add donation to user donation history (User_History)
+        User_History(username=user, communityName=community.name, charityName=community.cotm_id, amount=amount).save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class CommunityJoin(APIView):

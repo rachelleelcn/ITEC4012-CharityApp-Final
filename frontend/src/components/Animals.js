@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import {LinkContainer} from "react-router-bootstrap";
 
 class Animals extends Component {
     constructor(props) {
@@ -72,7 +73,7 @@ class Animals extends Component {
         })
             .then(response => {
                 if (response.ok) {
-                    const newState = {...this.state.community, joined: false};
+                    const newState = {...this.state.community, joined: false, member: this.state.community.member - 1};
                     this.setState({community: newState});
                 } else {
                     throw new Error('Network response was not ok');
@@ -90,7 +91,7 @@ class Animals extends Component {
         })
             .then(response => {
                 if (response.ok) {
-                    const newState = {...this.state.community, joined: true};
+                    const newState = {...this.state.community, joined: true, member: this.state.community.member + 1};
                     this.setState({community: newState});
                 } else {
                     throw new Error('Network response was not ok');
@@ -181,6 +182,16 @@ class Animals extends Component {
 
             // Account page
             <div className="container p-5">
+
+                <nav aria-label="breadcrumb">
+                    <ol className="breadcrumb">
+                        <LinkContainer to={`/explore`}>
+                            <li className="breadcrumb-item"><a href="#">Explore</a></li>
+                        </LinkContainer>
+                        <li className="breadcrumb-item active" aria-current="page">Animals</li>
+                    </ol>
+                </nav>
+
                 <div className="d-flex justify-content-between flex-wrap align-items-end">
                     <div>
                         <h2 className="mb-3">{community.name}</h2>
@@ -209,10 +220,14 @@ class Animals extends Component {
                         <p className="">{community.cotmDes}</p>
                         <h6 className="mt-4"><strong>Donation Progress</strong></h6>
                         <h1 className=""><strong>${community.progress}</strong></h1>
-                        <div className="mt-4 ">
+                        <div className="mt-4">
                             <a className="btn btn-outline-primary px-5 py-2 me-2" href={community.cotmWebsite}
                                target="_blank">Visit Website</a>
-                            <button className="btn btn-primary px-5 py-2" href="#">Donate Now</button>
+
+                            <LinkContainer to={`/explore/animals/donate`}>
+                                <button className="btn btn-primary px-5 py-2">Donate Now</button>
+                            </LinkContainer>
+
                         </div>
                     </div>
                     <div className="col-lg-6">
@@ -224,8 +239,9 @@ class Animals extends Component {
                     {this.renderComments()}
                 </ul>
                 <form onSubmit={this.addComment}>
-                    <textarea className="form-control mt-4" rows="3" placeholder="Show your support." onChange={this.handleInputChange} required value={newCommentText} />
-                    <button type="submit" className="btn btn-outline-primary px-5 py-2 my-3" >Share</button>
+                    <textarea className="form-control mt-4" rows="3" placeholder="Show your support."
+                              onChange={this.handleInputChange} required value={newCommentText}/>
+                    <button type="submit" className="btn btn-outline-primary px-5 py-2 my-3">Share</button>
                 </form>
 
                 <h5 className="mt-5">Our Charities</h5>

@@ -10,6 +10,7 @@ import {logout} from "./services/apiServices";
 import {Button, Nav} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import Animals from "./components/Animals";
+import Donate from "./components/Donate";
 
 
 class App extends React.Component {
@@ -55,6 +56,10 @@ class App extends React.Component {
                     <Route path="/explore/animals" element={
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
                             <Animals/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/animals/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate/>
                         </ProtectedRoute>}/>
 
                 </Routes>

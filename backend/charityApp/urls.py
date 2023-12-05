@@ -31,6 +31,8 @@ urlpatterns = [
     path('community_comments/', CommunityComments.as_view(), name='community_comments'),
     path('community_join/', CommunityJoin.as_view(), name='community_join'),
 
+    path('donate/', Donate.as_view(), name='donate'),
+
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
 
