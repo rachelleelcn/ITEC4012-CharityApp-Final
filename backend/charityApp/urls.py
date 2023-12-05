@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import Explore
+from .views import *
 
 urlpatterns = [
     # path('', views.start, name='start'),
@@ -22,6 +22,14 @@ urlpatterns = [
     # path('donate/', views.donate, name='donate')
 
     path('explore/', Explore.as_view(), name='explore'),
-    # path('charities/', CharityList.as_views(), name='charity-list'),
+    path('account_communities/', AccountCommunities.as_view(), name='account_communities'),
+    path('account_history/', AccountHistory.as_view(), name='account_history'),
+
+    path('animal_community/', AnimalCommunity.as_view(), name='animal_community'),
+    path('animal_charities/', AnimalCharities.as_view(), name='animal_charities'),
+    path('animal_comments/', AnimalComments.as_view(), name='animal_comments'),
+
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
 
 ]

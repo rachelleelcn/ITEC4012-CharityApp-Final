@@ -1,9 +1,5 @@
 import React, {Component} from "react";
-
-// let exploreDetails = [
-//     {id: 1, name: "Community name", member: 10, charityName: "Charity name", charityDes: "xxx", featured: true},
-// ];
-
+import {LinkContainer} from 'react-router-bootstrap';
 
 class Explore extends Component {
     constructor(props) {
@@ -14,7 +10,9 @@ class Explore extends Component {
     }
 
     componentDidMount() {
-        fetch('http://127.0.0.1:8000/explore/')
+        fetch('http://127.0.0.1:8000/explore/', {
+            credentials: 'include',
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -47,11 +45,13 @@ class Explore extends Component {
                                 <p className="card-text text-muted"><small>{exploreDetail.member} members</small></p>
                                 <hr/>
                                 <p className="card-text mb-2"><small>Charity of the Month</small></p>
-                                <h6 className="card-text"><strong>{exploreDetail.charityName}</strong></h6>
-                                <p className="card-text">{exploreDetail.charityDes}</p>
+                                <h6 className="card-text  text-truncate"><strong>{exploreDetail.charityName}</strong></h6>
+                                <p className="card-text card-description">{exploreDetail.charityDes}</p>
                                 <img className="img-fluid mb-4" src={require("../placeholder-image.jpg")}
                                      alt="Community image"/>
-                                <a href="#" className="btn btn-outline-primary w-100">View</a>
+                                <LinkContainer to={`/explore/${(exploreDetail.name).toLowerCase().split(" ").join("")}`}>
+                                    <div className="btn btn-outline-primary w-100">View</div>
+                                </LinkContainer>
                             </div>
                         </div>
                     </div>
@@ -65,8 +65,10 @@ class Explore extends Component {
                                 <p className="card-text text-muted"><small>{exploreDetail.member} members</small></p>
                                 <hr/>
                                 <p className="card-text mb-2"><small>Charity of the Month</small></p>
-                                <h6 className="card-text mb-4"><strong>{exploreDetail.charityName}</strong></h6>
-                                <a href="#" className="btn btn-outline-primary w-100">View</a>
+                                <h6 className="card-text mb-4 text-truncate"><strong>{exploreDetail.charityName}</strong></h6>
+                                <LinkContainer to={`/explore/${(exploreDetail.name).toLowerCase().split(" ").join("")}`}>
+                                    <div className="btn btn-outline-primary w-100">View</div>
+                                </LinkContainer>
                             </div>
                         </div>
                     </div>

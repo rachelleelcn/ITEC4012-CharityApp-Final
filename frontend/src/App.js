@@ -1,8 +1,71 @@
 import './App.css';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import React from "react";
+import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute';
 import Account from './components/Account'
 import Explore from './components/Explore'
 import NavBar from './components/NavBar'
+import Login from './components/Login'
+import {logout} from "./services/apiServices";
+import {Button, Nav} from "react-bootstrap";
+import {LinkContainer} from "react-router-bootstrap";
+import Animals from "./components/Animals";
+
+
+class App extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isAuthenticated: false
+        };
+    }
+
+    handleLoginSuccess = () => {
+        this.setState({isAuthenticated: true});
+    };
+
+    handleLogout = () => {
+        // Call API service to log out
+        logout().then(() => {
+            this.setState({isAuthenticated: false});
+        });
+        //this.setState({isAuthenticated: false});
+    };
+
+    render() {
+        return (
+            <Router>
+                {this.state.isAuthenticated ? (
+                    <NavBar onLogout={this.handleLogout}/>
+                ) :
+                    null
+                }
+                <Routes>
+                    <Route path="/" element={<Navigate replace to="/login"/>}/>
+                    <Route path="/login" element={<Login onLoginSuccess={this.handleLoginSuccess}/>}/>
+                    <Route path="/explore" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Explore/>
+                        </ProtectedRoute>}/>
+                    <Route path="/account" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Account/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/animals" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Animals/>
+                        </ProtectedRoute>}/>
+
+                </Routes>
+            </Router>
+        );
+    }
+
+}
+
+
+export default App;
 
 
 // let exploreDetails = [
@@ -208,28 +271,50 @@ import NavBar from './components/NavBar'
 //                     {/*</div>*/}
 //
 //
-//                     {/*Login page*/}
-//                     {/*<div className="col-lg-6 col-md-12 mt-5">*/}
-//                     {/*    <div className="d-flex align-items-center">*/}
-//                     {/*        <div className="me-4"><HouseHeartFill size={56}/></div>*/}
-//                     {/*        <h1 className="mt-2">Welcome to MyCharityHub</h1>*/}
-//                     {/*    </div>*/}
-//                     {/*    <h4 className="mt-5">Login</h4>*/}
-//                     {/*    <form>*/}
-//                     {/*        <div className="form-group mt-4">*/}
-//                     {/*            <label htmlFor="login_username">Username</label>*/}
-//                     {/*            <input type="text" className="form-control" id="login_username"/>*/}
-//                     {/*        </div>*/}
-//                     {/*        <div className="form-group mt-3">*/}
-//                     {/*            <label htmlFor="login_password">Password</label>*/}
-//                     {/*            <input type="password" className="form-control" id="login_password"/>*/}
-//                     {/*        </div>*/}
-//                     {/*        <button type="submit" className="btn btn-primary px-5 mt-4">Login</button>*/}
-//                     {/*    </form>*/}
-//                     {/*    <div className="mt-4">*/}
-//                     {/*        <small className="text-muted">Don’t have an account? <a href="#">Sign up</a></small>*/}
-//                     {/*    </div>*/}
-//                     {/*</div>*/}
+// {/*Login page*/
+// }
+// {/*<div className="col-lg-6 col-md-12 mt-5">*/
+// }
+// {/*    <div className="d-flex align-items-center">*/
+// }
+// {/*        <div className="me-4"><HouseHeartFill size={56}/></div>*/
+// }
+// {/*        <h1 className="mt-2">Welcome to MyCharityHub</h1>*/
+// }
+// {/*    </div>*/
+// }
+// {/*    <h4 className="mt-5">Login</h4>*/
+// }
+// {/*    <form>*/
+// }
+// {/*        <div className="form-group mt-4">*/
+// }
+// {/*            <label htmlFor="login_username">Username</label>*/
+// }
+// {/*            <input type="text" className="form-control" id="login_username"/>*/
+// }
+// {/*        </div>*/
+// }
+// {/*        <div className="form-group mt-3">*/
+// }
+// {/*            <label htmlFor="login_password">Password</label>*/
+// }
+// {/*            <input type="password" className="form-control" id="login_password"/>*/
+// }
+// {/*        </div>*/
+// }
+// {/*        <button type="submit" className="btn btn-primary px-5 mt-4">Login</button>*/
+// }
+// {/*    </form>*/
+// }
+// {/*    <div className="mt-4">*/
+// }
+// {/*        <small className="text-muted">Don’t have an account? <a href="#">Sign up</a></small>*/
+// }
+// {/*    </div>*/
+// }
+// {/*</div>*/
+// }
 //
 //
 //                     {/*Sign up page*/}
@@ -278,17 +363,5 @@ import NavBar from './components/NavBar'
 //     }
 // }
 
-function App() {
-    // return <Account />
-    return (
-        <Router>
 
-            <NavBar/>
-            <Routes>
-                <Route path="/explore" element={<Explore/>}/>
-                <Route path="/account" element={<Account/>}/>
-            </Routes>
-        </Router>);
-}
 
-export default App;
