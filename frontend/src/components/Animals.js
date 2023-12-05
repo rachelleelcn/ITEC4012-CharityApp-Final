@@ -6,13 +6,14 @@ class Animals extends Component {
         this.state = {
             community: {},
             charities: [],
-            comments: []
+            comments: [],
+            newCommentText: ""
         }
     }
 
     componentDidMount() {
         //fetch community details
-        fetch('http://127.0.0.1:8000/animal_community/', {
+        fetch('http://127.0.0.1:8000/community_details/', {
             credentials: 'include',
         })
             .then(response => {
@@ -29,7 +30,7 @@ class Animals extends Component {
             });
 
         //fetch community charities
-        fetch('http://127.0.0.1:8000/animal_charities/', {
+        fetch('http://127.0.0.1:8000/community_charities/', {
             credentials: 'include',
         })
             .then(response => {
@@ -46,7 +47,7 @@ class Animals extends Component {
             });
 
         //fetch community comments
-        fetch('http://127.0.0.1:8000/animal_comments/', {
+        fetch('http://127.0.0.1:8000/community_comments/', {
             credentials: 'include',
         })
             .then(response => {
@@ -61,8 +62,74 @@ class Animals extends Component {
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
+    }
 
 
+    leaveCommunity() {
+        fetch(`http://127.0.0.1:8000/community_join/`, {
+            method: 'DELETE',
+            credentials: 'include',
+        })
+            .then(response => {
+                if (response.ok) {
+                    const newState = {...this.state.community, joined: false};
+                    this.setState({community: newState});
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your leave operation:', error);
+            });
+    }
+
+    joinCommunity() {
+        fetch(`http://127.0.0.1:8000/community_join/`, {
+            method: 'POST',
+            credentials: 'include',
+        })
+            .then(response => {
+                if (response.ok) {
+                    const newState = {...this.state.community, joined: true};
+                    this.setState({community: newState});
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your join operation:', error);
+            });
+    }
+
+    handleInputChange = (e) => {
+        this.setState({newCommentText: e.target.value});
+    }
+
+    addComment = (event) => {
+        event.preventDefault();
+
+        const {newCommentText} = this.state;
+        fetch(`http://127.0.0.1:8000/community_comments/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment: newCommentText,
+            }),
+        })
+            .then(response => response.json())
+            .then(newComment => {
+                const newState = [...this.state.comments, newComment];
+                this.setState({
+                    comments: newState,
+                    newCommentText: ''
+                });
+            })
+            .catch(error => {
+                console.error('There has been a problem with your share operation:', error);
+            });
     }
 
     renderCharities = () => {
@@ -105,9 +172,10 @@ class Animals extends Component {
         return listItems;
     }
 
+
     render() {
 
-        const community = this.state.community;
+        const {community, newCommentText} = this.state;
 
         return (
 
@@ -117,7 +185,15 @@ class Animals extends Component {
                     <div>
                         <h2 className="mb-3">{community.name}</h2>
                         <p>{community.member} Members</p>
-                        <button className="btn btn-outline-primary px-5" href="#">Leave</button>
+
+                        {community.joined ?
+                            (<button className="btn btn-outline-primary px-5"
+                                     onClick={() => this.leaveCommunity()}>Leave</button>) :
+                            (<button className="btn btn-primary px-5"
+                                     onClick={() => this.joinCommunity()}>Join</button>)
+                        }
+
+
                     </div>
                     <div className="card py-3 px-4 mt-4">
                         <p className="my-1">Last month’s result ({community.lastMonth})</p>
@@ -147,8 +223,11 @@ class Animals extends Component {
                 <ul className="list-group list-group-flush col-lg-12 mt-3">
                     {this.renderComments()}
                 </ul>
-                <textarea className="form-control mt-4" rows="3" placeholder="Show your support."></textarea>
-                <button type="submit" className="btn btn-outline-primary px-5 py-2 my-3" href="#">Share</button>
+                <form onSubmit={this.addComment}>
+                    <textarea className="form-control mt-4" rows="3" placeholder="Show your support." onChange={this.handleInputChange} required value={newCommentText} />
+                    <button type="submit" className="btn btn-outline-primary px-5 py-2 my-3" >Share</button>
+                </form>
+
                 <h5 className="mt-5">Our Charities</h5>
                 <div className="card-columns">
                     <div className="row">

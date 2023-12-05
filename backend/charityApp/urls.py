@@ -22,12 +22,14 @@ urlpatterns = [
     # path('donate/', views.donate, name='donate')
 
     path('explore/', Explore.as_view(), name='explore'),
+
     path('account_communities/', AccountCommunities.as_view(), name='account_communities'),
     path('account_history/', AccountHistory.as_view(), name='account_history'),
 
-    path('animal_community/', AnimalCommunity.as_view(), name='animal_community'),
-    path('animal_charities/', AnimalCharities.as_view(), name='animal_charities'),
-    path('animal_comments/', AnimalComments.as_view(), name='animal_comments'),
+    path('community_details/', CommunityDetails.as_view(), name='community_details'),
+    path('community_charities/', CommunityCharities.as_view(), name='community_charities'),
+    path('community_comments/', CommunityComments.as_view(), name='community_comments'),
+    path('community_join/', CommunityJoin.as_view(), name='community_join'),
 
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),

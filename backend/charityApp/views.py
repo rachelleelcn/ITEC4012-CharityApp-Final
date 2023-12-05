@@ -7,13 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import admin
-from .models import Charity, Community, User_History, User_Community, Community_History, Community_Charity, Community_Comment
+from .models import Charity, Community, User_History, User_Community, Community_History, Community_Charity, \
+    Community_Comment
 from django.contrib.auth.models import User
 from .forms import CommentForm
 import stripe
 import decimal
 import json
-from .serializers import CharitySerializer, CommunitySerializer, UserHistorySerializer, UserCommunitySerializer, CommunityHistorySerializer, CommunityCharitySerializer, CommunityCommentSerializer
+from .serializers import CharitySerializer, CommunitySerializer, UserHistorySerializer, UserCommunitySerializer, \
+    CommunityHistorySerializer, CommunityCharitySerializer, CommunityCommentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,21 +24,37 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 
 
-class AnimalCommunity(APIView):
+class CommunityJoin(APIView):
+    def delete(self, request):
+        user = User.objects.get(id=1)
+        community = Community.objects.get(id=1)
+        if User_Community.objects.filter(username=user, communityID=community):
+            User_Community.objects.get(username=user, communityID=community).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def post(self, request):
+        user = User.objects.get(id=1)
+        community = Community.objects.get(id=1)
+        if not User_Community.objects.filter(username=user, communityID=community):
+            User_Community(username=user, communityID=community).save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CommunityDetails(APIView):
     # permission_classes = [IsAuthenticated]
     def get(self, request):
         community = Community.objects.get(id=1)
         userCount = community.user_community_set.all().count()
         lastHistory = community.community_history_set.all().last()
 
-        # # get communities current user is in
-        # user = 1
-        # userCommunities = User_Community.objects.filter(username=user)
-        # # Check if user joined the community
-        # join = False
-        # for item in userCommunities:
-        #     if str(item.communityID) == str(community.name):
-        #         join = True
+        # get communities current user is in
+        user = 1
+        userCommunities = User_Community.objects.filter(username=user)
+        # Check if user joined the community
+        join = False
+        for item in userCommunities:
+            if item.communityID.name == community.name:
+                join = True
 
         animalCommunityJson = {
             "id": community.id,
@@ -49,11 +67,13 @@ class AnimalCommunity(APIView):
             "cotmDes": community.cotm_id.description,
             "cotmWebsite": community.cotm_id.website,
             "progress": community.progress,
-            "member": userCount
+            "member": userCount,
+            "joined": join
         }
         return Response(animalCommunityJson)
 
-class AnimalCharities(APIView):
+
+class CommunityCharities(APIView):
     # permission_classes = [IsAuthenticated]
     def get(self, request):
         community = Community.objects.get(id=1)
@@ -69,7 +89,8 @@ class AnimalCharities(APIView):
             })
         return Response(charitiesJson)
 
-class AnimalComments(APIView):
+
+class CommunityComments(APIView):
     # permission_classes = [IsAuthenticated]
     def get(self, request):
         community = Community.objects.get(id=1)
@@ -85,6 +106,22 @@ class AnimalComments(APIView):
             })
         return Response(commentsJson)
 
+    def post(self, request):
+        comment = request.data.get("comment")
+        user = User.objects.get(id=1)
+        community = Community.objects.get(id=1)
+        Community_Comment(username=user, communityID=community, comment=comment).save()
+        item = Community_Comment.objects.last()
+        commentJson = {
+            "id": item.commentID,
+            "community": item.communityID.name,
+            "date": item.date,
+            "comment": item.comment,
+            "user": item.username.username
+        }
+        return Response(commentJson, status=status.HTTP_201_CREATED)
+
+
 class AccountCommunities(APIView):
     # permission_classes = [IsAuthenticated]
     def get(self, request):
@@ -98,6 +135,7 @@ class AccountCommunities(APIView):
                 "community": item.communityID.name
             })
         return Response(userCommunitiesJson)
+
 
 class AccountHistory(APIView):
     # permission_classes = [IsAuthenticated]
@@ -464,6 +502,3 @@ def logout_view(request):
 #     return render(request, 'communities/socialservices.html',
 #                   {'community': community, 'userCount': userCount, 'lastHistory': lastHistory, 'charities': charities,
 #                    'comments': comments, 'commentform': commentform, 'userCommunities': userCommunities, 'join': join})
-
-
-
