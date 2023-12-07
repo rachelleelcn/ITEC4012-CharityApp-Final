@@ -7,7 +7,6 @@ function DonateStatus({community}) {
     const [show, setShow] = useState(true);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    console.log(community);
     return (
         <>
             <Modal

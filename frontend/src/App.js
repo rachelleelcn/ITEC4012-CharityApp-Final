@@ -16,7 +16,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isAuthenticated: false
+            isAuthenticated: false,
         };
     }
 
@@ -29,8 +29,9 @@ class App extends React.Component {
         logout().then(() => {
             this.setState({isAuthenticated: false});
         });
-        //this.setState({isAuthenticated: false});
     };
+
+
 
     render() {
         return (
@@ -56,11 +57,74 @@ class App extends React.Component {
 
                     <Route path="/explore/animals" element={
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
-                            <Community/>
+                            <Community id={1}/>
                         </ProtectedRoute>}/>
                     <Route path="/explore/animals/donate" element={
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
-                            <Donate/>
+                            <Donate id={1}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/arts&culture" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={2}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/arts&culture/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={2}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/education" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={3}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/education/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={3}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/environment" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={4}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/environment/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={4}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/health" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={5}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/health/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={5}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/indigenouspeoples" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={6}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/indigenouspeoples/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={6}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/publicbenefit" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={7}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/publicbenefit/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={7}/>
+                        </ProtectedRoute>}/>
+
+                    <Route path="/explore/socialservices" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Community id={8}/>
+                        </ProtectedRoute>}/>
+                    <Route path="/explore/socialservices/donate" element={
+                        <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
+                            <Donate id={8}/>
                         </ProtectedRoute>}/>
 
 
