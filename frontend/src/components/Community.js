@@ -1,45 +1,42 @@
 import React, {Component} from "react";
 import {LinkContainer} from "react-router-bootstrap";
+import {
+    communityAddComment,
+    communityCharities,
+    communityComments,
+    communityDetails,
+    communityJoin,
+    communityLeave
+} from "../services/apiServices";
 
-class Animals extends Component {
+class Community extends Component {
     constructor(props) {
         super(props);
+
+
         this.state = {
+            id: 1,
             community: {},
             charities: [],
             comments: [],
-            newCommentText: ""
+            newCommentText: "",
+            communityNav: "",
         }
     }
 
     componentDidMount() {
         //fetch community details
-        fetch('http://127.0.0.1:8000/community_details/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        communityDetails(this.state.id)
             .then(communityJson => {
                 this.setState({community: communityJson});
+                this.setState({communityNav: (this.state.community.name).toLowerCase().split(" ").join("")});
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
 
         //fetch community charities
-        fetch('http://127.0.0.1:8000/community_charities/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        communityCharities(this.state.id)
             .then(charitiesJson => {
                 this.setState({charities: charitiesJson});
             })
@@ -48,15 +45,7 @@ class Animals extends Component {
             });
 
         //fetch community comments
-        fetch('http://127.0.0.1:8000/community_comments/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        communityComments(this.state.id)
             .then(commentsJson => {
                 this.setState({comments: commentsJson});
             })
@@ -67,10 +56,7 @@ class Animals extends Component {
 
 
     leaveCommunity() {
-        fetch(`http://127.0.0.1:8000/community_join/`, {
-            method: 'DELETE',
-            credentials: 'include',
-        })
+        communityLeave(this.state.id)
             .then(response => {
                 if (response.ok) {
                     const newState = {...this.state.community, joined: false, member: this.state.community.member - 1};
@@ -85,10 +71,7 @@ class Animals extends Component {
     }
 
     joinCommunity() {
-        fetch(`http://127.0.0.1:8000/community_join/`, {
-            method: 'POST',
-            credentials: 'include',
-        })
+        communityJoin(this.state.id)
             .then(response => {
                 if (response.ok) {
                     const newState = {...this.state.community, joined: true, member: this.state.community.member + 1};
@@ -108,19 +91,8 @@ class Animals extends Component {
 
     addComment = (event) => {
         event.preventDefault();
-
         const {newCommentText} = this.state;
-        fetch(`http://127.0.0.1:8000/community_comments/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                comment: newCommentText,
-            }),
-        })
-            .then(response => response.json())
+        communityAddComment(newCommentText, this.state.id)
             .then(newComment => {
                 const newState = [...this.state.comments, newComment];
                 this.setState({
@@ -145,7 +117,7 @@ class Animals extends Component {
                             <h5 className="card-title text-truncate"><strong>{item.name}</strong></h5>
                             <p className="card-text text-muted mb-2"><small>{item.location}</small></p>
                             <p className="card-text card-description">{item.description}</p>
-                            <img className="img-fluid mb-4" src={require("../placeholder-image.jpg")}
+                            <img className="img-fluid mb-4" src={item.image}
                                  alt="Charity image"/>
                             <a href={item.website} className="btn btn-outline-primary w-100" target="_blank">Visit
                                 Website</a>
@@ -175,20 +147,16 @@ class Animals extends Component {
 
 
     render() {
-
-        const {community, newCommentText} = this.state;
-
+        const {community, newCommentText, communityNav} = this.state;
         return (
-
             // Account page
             <div className="container p-5">
-
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <LinkContainer to={`/explore`}>
                             <li className="breadcrumb-item"><a href="#">Explore</a></li>
                         </LinkContainer>
-                        <li className="breadcrumb-item active" aria-current="page">Animals</li>
+                        <li className="breadcrumb-item active" aria-current="page">{community.name}</li>
                     </ol>
                 </nav>
 
@@ -224,14 +192,14 @@ class Animals extends Component {
                             <a className="btn btn-outline-primary px-5 py-2 me-2" href={community.cotmWebsite}
                                target="_blank">Visit Website</a>
 
-                            <LinkContainer to={`/explore/animals/donate`}>
+                            <LinkContainer to={`/explore/${communityNav}/donate`}>
                                 <button className="btn btn-primary px-5 py-2">Donate Now</button>
                             </LinkContainer>
 
                         </div>
                     </div>
                     <div className="col-lg-6">
-                        <img className="img-fluid" src={require("../placeholder-image.jpg")} alt="Community image"/>
+                        <img className="img-fluid" src={community.cotmImage} alt="Cotm image"/>
                     </div>
                 </div>
                 <h5 className="">Words of Support</h5>
@@ -254,7 +222,6 @@ class Animals extends Component {
             </div>
         )
     }
-
 }
 
-export default Animals;
+export default Community;

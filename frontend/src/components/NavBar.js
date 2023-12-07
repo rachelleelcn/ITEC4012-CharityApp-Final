@@ -10,7 +10,9 @@ function NavBar({username, onLogout}) {
         // NavBar
         <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
             <Container>
-                <Navbar.Brand><HouseHeartFill className="mx-1 mb-1"/>MyCharityApp</Navbar.Brand>
+                <LinkContainer to="/explore">
+                    <Navbar.Brand><HouseHeartFill className="mx-1 mb-1"/>MyCharityApp</Navbar.Brand>
+                </LinkContainer>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="ms-auto align-items-lg-center">

@@ -25,33 +25,40 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 
 
-
 class Donate(APIView):
-    def post(self, request):
+    def post(self, request, communityID):
         amount = request.data.get("amount")
-        user = User.objects.get(id=1)
-        # add donation amount to Community's progress
-        community = Community.objects.get(id=1)
-        community.progress = community.progress + decimal.Decimal(float(amount))
-        community.save()
-        # add donation to user donation history (User_History)
-        User_History(username=user, communityName=community.name, charityName=community.cotm_id, amount=amount).save()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        if amount:
+            amount = decimal.Decimal(float(amount))
+            if (amount >= 0.5) and (amount <= 100000):
+                user = User.objects.get(id=1)
+                # add donation amount to Community's progress
+                community = Community.objects.get(id=communityID)
+                community.progress = community.progress + amount
+                community.save()
+                # add donation to user donation history (User_History)
+                User_History(username=user, communityName=community.name, charityName=community.cotm_id,
+                             amount=amount).save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                print("invalid")
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print("empty")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommunityJoin(APIView):
-    def delete(self, request):
+    def delete(self, request, communityID):
         user = User.objects.get(id=1)
-        community = Community.objects.get(id=1)
+        community = Community.objects.get(id=communityID)
         if User_Community.objects.filter(username=user, communityID=community):
             User_Community.objects.get(username=user, communityID=community).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def post(self, request):
+    def post(self, request, communityID):
         user = User.objects.get(id=1)
-        community = Community.objects.get(id=1)
+        community = Community.objects.get(id=communityID)
         if not User_Community.objects.filter(username=user, communityID=community):
             User_Community(username=user, communityID=community).save()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -59,8 +66,8 @@ class CommunityJoin(APIView):
 
 class CommunityDetails(APIView):
     # permission_classes = [IsAuthenticated]
-    def get(self, request):
-        community = Community.objects.get(id=1)
+    def get(self, request, communityID):
+        community = Community.objects.get(id=communityID)
         userCount = community.user_community_set.all().count()
         lastHistory = community.community_history_set.all().last()
 
@@ -73,7 +80,7 @@ class CommunityDetails(APIView):
             if item.communityID.name == community.name:
                 join = True
 
-        animalCommunityJson = {
+        communityJson = {
             "id": community.id,
             "name": community.name,
             "lastMonth": lastHistory.date.strftime('%b'),
@@ -85,15 +92,16 @@ class CommunityDetails(APIView):
             "cotmWebsite": community.cotm_id.website,
             "progress": community.progress,
             "member": userCount,
-            "joined": join
+            "joined": join,
+            "cotmImage": settings.SITE_URL + community.cotm_id.image.url
         }
-        return Response(animalCommunityJson)
+        return Response(communityJson)
 
 
 class CommunityCharities(APIView):
     # permission_classes = [IsAuthenticated]
-    def get(self, request):
-        community = Community.objects.get(id=1)
+    def get(self, request, communityID):
+        community = Community.objects.get(id=communityID)
         charities = community.community_charity_set.all()
         charitiesJson = []
         for item in charities:
@@ -102,15 +110,16 @@ class CommunityCharities(APIView):
                 "name": item.charityID.name,
                 "location": item.charityID.location,
                 "description": item.charityID.description,
-                "website": item.charityID.website
+                "website": item.charityID.website,
+                "image": settings.SITE_URL + item.charityID.image.url
             })
         return Response(charitiesJson)
 
 
 class CommunityComments(APIView):
     # permission_classes = [IsAuthenticated]
-    def get(self, request):
-        community = Community.objects.get(id=1)
+    def get(self, request, communityID):
+        community = Community.objects.get(id=communityID)
         comments = community.community_comment_set.all()
         commentsJson = []
         for item in comments:
@@ -123,20 +132,25 @@ class CommunityComments(APIView):
             })
         return Response(commentsJson)
 
-    def post(self, request):
+    def post(self, request, communityID):
         comment = request.data.get("comment")
-        user = User.objects.get(id=1)
-        community = Community.objects.get(id=1)
-        Community_Comment(username=user, communityID=community, comment=comment).save()
-        item = Community_Comment.objects.last()
-        commentJson = {
-            "id": item.commentID,
-            "community": item.communityID.name,
-            "date": item.date,
-            "comment": item.comment,
-            "user": item.username.username
-        }
-        return Response(commentJson, status=status.HTTP_201_CREATED)
+        if comment:
+            user = User.objects.get(id=1)
+            community = Community.objects.get(id=communityID)
+            Community_Comment(username=user, communityID=community, comment=comment).save()
+            item = Community_Comment.objects.last()
+            commentJson = {
+                "id": item.commentID,
+                "community": item.communityID.name,
+                "date": item.date,
+                "comment": item.comment,
+                "user": item.username.username
+            }
+            return Response(commentJson, status=status.HTTP_201_CREATED)
+        else:
+            print("empty")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class AccountCommunities(APIView):
@@ -177,7 +191,8 @@ class Explore(APIView):
                 "member": communityUserCount[i]["count"],
                 "charityName": communities[i].cotm_id.name,
                 "charityDes": communities[i].cotm_id.description,
-                "featured": communities[i].featured
+                "featured": communities[i].featured,
+                "image": settings.SITE_URL + communities[i].cotm_id.image.url
             })
         return Response(exploreJson)
 

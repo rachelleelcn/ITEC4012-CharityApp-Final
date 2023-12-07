@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {LinkContainer} from "react-router-bootstrap";
+import {accountCommunities, accountHistory} from "../services/apiServices";
 
 class Account extends Component {
     constructor(props) {
@@ -12,15 +13,7 @@ class Account extends Component {
 
     componentDidMount() {
         //fetch account communities
-        fetch('http://127.0.0.1:8000/account_communities/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        accountCommunities()
             .then(accountCommunitiesJson => {
                 this.setState({accountCommunities: accountCommunitiesJson});
                 document.getElementById("userWelcome").innerHTML = "Hello, " + this.state.accountCommunities[0].user;
@@ -30,24 +23,13 @@ class Account extends Component {
             });
 
         //fetch account history
-        fetch('http://127.0.0.1:8000/account_history/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        accountHistory()
             .then(accountHistoryJson => {
                 this.setState({accountHistory: accountHistoryJson});
-
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
-
-
     }
 
     renderUserCommunities = () => {
@@ -56,7 +38,7 @@ class Account extends Component {
         for (let i = 0; i < userCommunities.length; i++) {
             let item = userCommunities[i];
             listItems.push(
-                <li className="list-group-item d-flex justify-content-between align-items-center py-3">
+                <li className="list-group-item d-flex justify-content-between align-items-center py-3 flex-wrap">
                     {item.community}
                     <LinkContainer to={`/explore/${(item.community).toLowerCase().split(" ").join("")}`}>
                         <div className="btn btn-outline-primary px-5">View</div>
@@ -72,12 +54,6 @@ class Account extends Component {
         for (let i = 0; i < userHistory.length; i++) {
             let item = userHistory[i];
             listItems.push(
-                // <li className="list-group-item d-flex flex-wrap justify-content-between align-items-center py-3">
-                //     <div>{item.date}</div>
-                //     <div><strong>{item.charityName}</strong></div>
-                //     <div>{item.communityName}</div>
-                //     <div>${item.amount}</div>
-                // </li>
                 <tr className="my-2">
                     <td>{item.date}</td>
                     <td><strong>{item.charityName}</strong></td>
@@ -92,7 +68,6 @@ class Account extends Component {
     render() {
 
         return (
-
             // Account page
             <div className="container p-5">
                 <h2 className="mb-3" id="userWelcome"></h2>
@@ -112,7 +87,6 @@ class Account extends Component {
             </div>
         )
     }
-
 }
 
 export default Account;

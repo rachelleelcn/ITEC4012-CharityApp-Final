@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 from .views import *
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     # path('', views.start, name='start'),
     # path('signup/', views.signup_view, name='signup'),
@@ -26,14 +29,14 @@ urlpatterns = [
     path('account_communities/', AccountCommunities.as_view(), name='account_communities'),
     path('account_history/', AccountHistory.as_view(), name='account_history'),
 
-    path('community_details/', CommunityDetails.as_view(), name='community_details'),
-    path('community_charities/', CommunityCharities.as_view(), name='community_charities'),
-    path('community_comments/', CommunityComments.as_view(), name='community_comments'),
-    path('community_join/', CommunityJoin.as_view(), name='community_join'),
+    path('community_details/<int:communityID>/', CommunityDetails.as_view(), name='community_details'),
+    path('community_charities/<int:communityID>/', CommunityCharities.as_view(), name='community_charities'),
+    path('community_comments/<int:communityID>/', CommunityComments.as_view(), name='community_comments'),
+    path('community_join/<int:communityID>/', CommunityJoin.as_view(), name='community_join'),
 
-    path('donate/', Donate.as_view(), name='donate'),
+    path('donate/<int:communityID>/', Donate.as_view(), name='donate'),
 
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

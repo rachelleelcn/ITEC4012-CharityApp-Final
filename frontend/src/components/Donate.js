@@ -1,45 +1,45 @@
 import React, {Component} from "react";
 import {LinkContainer} from "react-router-bootstrap";
 import DonateStatus from "./DonateStatus";
-import donateStatus from "./DonateStatus";
-
+import {communityDetails, donate} from "../services/apiServices";
 
 
 class Donate extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: 1,
             donateStatus: false,
+            community: {},
+            communityNav: "",
         }
     }
 
+
+    componentDidMount() {
+        //fetch community details
+        communityDetails(this.state.id)
+            .then(communityJson => {
+                this.setState({community: communityJson});
+                this.setState({communityNav: (this.state.community.name).toLowerCase().split(" ").join("")});
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+
+
+
+
     makeDonation = (event) => {
         event.preventDefault();
-
         const amount = document.getElementById("amount").value;
-        console.log(amount)
 
-        fetch(`http://127.0.0.1:8000/donate/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                amount: amount,
-            }),
-        })
+        donate(amount, this.state.id)
             .then(response => {
                 if (response.ok) {
-                    // const filteredItems = this.state.todoList.filter(item => item.id !== id);
-                    // this.setState({todoList: filteredItems});
-                    console.log("test");
+                    document.getElementById("donateError").innerHTML = "";
                     this.setState({donateStatus: true});
-                    let inputs = document.getElementsByTagName('input');
-                    for (let i = 0; i < inputs.length; ++i) {
-                        inputs[i].setAttribute("value", "");
-                    }
-
                 } else {
                     throw new Error('Network response was not ok');
                 }
@@ -47,14 +47,13 @@ class Donate extends Component {
             .catch(error => {
                 console.error('There has been a problem with your donate operation:', error);
                 document.getElementById("donateError").innerHTML = "Donation unsuccessful";
-
             });
     }
 
 
     render() {
 
-        const {donateStatus} = this.state;
+        const {donateStatus, community, communityNav} = this.state;
         return (
             // Donate page
             <div className="container p-5">
@@ -64,8 +63,8 @@ class Donate extends Component {
                         <LinkContainer to={`/explore`}>
                             <li className="breadcrumb-item"><a href="#">Explore</a></li>
                         </LinkContainer>
-                        <LinkContainer to={`/explore/animals`}>
-                            <li className="breadcrumb-item"><a href="#">Animals</a></li>
+                        <LinkContainer to={`/explore/${communityNav}`}>
+                            <li className="breadcrumb-item"><a href="#">{community.name}</a></li>
                         </LinkContainer>
                         <li className="breadcrumb-item active" aria-current="page">Donate</li>
                     </ol>
@@ -73,7 +72,7 @@ class Donate extends Component {
 
                 <div className="col-lg-6 col-md-12 mt-5">
                     <h5 className="mb-2">Your help means a lot!</h5>
-                    <h2 className="mb-2">Donate to Polar Bears International</h2>
+                    <h2 className="mb-2">Donate to {community.cotmName}</h2>
 
                     <form onSubmit={this.makeDonation}>
                         <div className="form-group mt-5">
@@ -88,17 +87,18 @@ class Donate extends Component {
                         <div className="form-group mt-3">
                             <label>Card Number</label>
                             <input type="text" className="form-control" name="card" placeholder="1212121212121212"
-                                   maxLength="19" required/>
+                                   minLength="8" maxLength="19" pattern="\d*" required/>
                         </div>
                         <div className="form-row d-flex flex-wrap">
                             <div className="form-group mt-3 me-2">
                                 <label>Expiry Date</label>
                                 <input type="text" className="form-control" name="expiry" placeholder="MMYY"
-                                       maxLength="4" required/>
+                                       minLength="4" maxLength="4" pattern="\d*" required/>
                             </div>
                             <div className="form-group mt-3">
                                 <label>CVV/CVC</label>
-                                <input type="text" className="form-control" name="cvv" placeholder="123" maxLength="3"
+                                <input type="text" className="form-control" name="cvv/cvc" placeholder="123"
+                                       minLength="3" maxLength="3" pattern="\d*"
                                        required/>
                             </div>
 
@@ -107,18 +107,14 @@ class Donate extends Component {
                         <p id="donateError" className="text-danger mt-3 mb-0"></p>
 
                         <div className="mt-4">
-                            <LinkContainer to={`/explore/animals/`}>
+                            <LinkContainer to={`/explore/${communityNav}`}>
                                 <button className="btn btn-outline-primary px-5 py-2 me-2">Back</button>
                             </LinkContainer>
                             <button type="submit" className="btn btn-primary px-5 py-2">Donate</button>
                         </div>
-
                     </form>
-
                 </div>
-
-                {donateStatus? <DonateStatus /> : null}
-
+                {donateStatus ? <DonateStatus community={community.name}/> : null}
 
             </div>
         )

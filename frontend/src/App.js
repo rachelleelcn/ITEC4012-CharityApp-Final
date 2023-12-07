@@ -7,9 +7,7 @@ import Explore from './components/Explore'
 import NavBar from './components/NavBar'
 import Login from './components/Login'
 import {logout} from "./services/apiServices";
-import {Button, Nav} from "react-bootstrap";
-import {LinkContainer} from "react-router-bootstrap";
-import Animals from "./components/Animals";
+import Community from "./components/Community";
 import Donate from "./components/Donate";
 
 
@@ -53,14 +51,19 @@ class App extends React.Component {
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
                             <Account/>
                         </ProtectedRoute>}/>
+
+
+
                     <Route path="/explore/animals" element={
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
-                            <Animals/>
+                            <Community/>
                         </ProtectedRoute>}/>
                     <Route path="/explore/animals/donate" element={
                         <ProtectedRoute isAuthenticated={this.state.isAuthenticated}>
                             <Donate/>
                         </ProtectedRoute>}/>
+
+
 
                 </Routes>
             </Router>

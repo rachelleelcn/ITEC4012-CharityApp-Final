@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {LinkContainer} from 'react-router-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import {explore} from "../services/apiServices";
 
 class Explore extends Component {
     constructor(props) {
@@ -12,15 +13,7 @@ class Explore extends Component {
     }
 
     componentDidMount() {
-        fetch('http://127.0.0.1:8000/explore/', {
-            credentials: 'include',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        explore()
             .then(exploreJson => {
                 this.setState({exploreDetails: exploreJson});
             })
@@ -28,7 +21,6 @@ class Explore extends Component {
                 console.error('There has been a problem with your fetch operation:', error);
             });
     }
-
 
     renderCommunities = (featured) => {
         const exploreDetails = this.state.exploreDetails;
@@ -53,7 +45,7 @@ class Explore extends Component {
                                 <h6 className="card-text  text-truncate">
                                     <strong>{exploreDetail.charityName}</strong></h6>
                                 <p className="card-text card-description">{exploreDetail.charityDes}</p>
-                                <img className="img-fluid mb-4" src={require("../placeholder-image.jpg")}
+                                <img className="img-fluid mb-4" src={exploreDetail.image}
                                      alt="Community image"/>
                                 <LinkContainer
                                     to={`/explore/${(exploreDetail.name).toLowerCase().split(" ").join("")}`}>
