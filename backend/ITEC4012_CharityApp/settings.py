@@ -9,13 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 import stripe
+from django.template.context_processors import media
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -26,9 +26,28 @@ SECRET_KEY = 'django-insecure-acv*efyq#u-ss-ss*f)8xhe5-if5z8_z6*p04p$7jt7)0e8x)k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-CORS_ALLOW_ALL_ORIGINS = True
+# ALLOW COOKIES TO BE SENT
+CORS_ALLOW_CREDENTIALS = True
+
+# ALLOW FORMS TO BE POSTED WITH AUTHENTICATION
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000'
+]
+
+# Allow React frontend to send CORS requests
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
 
 # Application definition
 
@@ -76,7 +95,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ITEC4012_CharityApp.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -86,7 +104,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -106,7 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -120,11 +136,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+SITE_URL = 'http://127.0.0.1:8000'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
