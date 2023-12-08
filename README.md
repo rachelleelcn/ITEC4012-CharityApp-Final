@@ -48,9 +48,6 @@ https://github.com/rachelleelcn/ITEC4012-CharityApp-Final.git
     - Comment to the community's Words of Support board
     - View and visit community-related charity websites
 
-## References
-1) Community categories and charities reference to CanadaHelps https://www.canadahelps.org/en/
-
 ## Implementations
 1) Main features
     - All main features from the backend are implmented in the frontend
@@ -58,4 +55,9 @@ https://github.com/rachelleelcn/ITEC4012-CharityApp-Final.git
 3) Miscellaneous features
     - Breadcrumb navigation
     - Tooltip hover animation (over non-featured communities to display community descriptions)
+
+## References
+1) Community categories and charities reference to CanadaHelps https://www.canadahelps.org/en/
+
+
 
