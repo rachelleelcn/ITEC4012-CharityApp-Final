@@ -13,6 +13,7 @@ class Explore extends Component {
     }
 
     componentDidMount() {
+        // fetch details for community cards
         explore()
             .then(exploreJson => {
                 this.setState({exploreDetails: exploreJson});
@@ -22,15 +23,16 @@ class Explore extends Component {
             });
     }
 
+    // render community cards
     renderCommunities = (featured) => {
         const exploreDetails = this.state.exploreDetails;
         const featuredCommunities = [];
         const nonFeaturedCommunities = [];
 
-
         for (let i = 0; i < exploreDetails.length; i++) {
             let exploreDetail = exploreDetails[i];
 
+            // save details of featured communities
             if (exploreDetail.featured) {
                 featuredCommunities.push(
                     <div className="col-lg-4 col-md-6 col-sm-12">
@@ -53,11 +55,12 @@ class Explore extends Component {
                                 </LinkContainer>
                             </div>
                         </div>
-
-
                     </div>
                 );
+
             } else {
+
+                // save details of non-featured communities
                 nonFeaturedCommunities.push(
                     <div className="col-lg-4 col-md-6 col-sm-12">
                         <div className="card p-3 my-3 mx-1">
@@ -67,6 +70,7 @@ class Explore extends Component {
                                 <hr/>
                                 <p className="card-text mb-2"><small>Charity of the Month</small></p>
 
+                                {/* tooltips for community descriptions (not shown in cards) */}
                                 <OverlayTrigger placement="top" overlay={
                                     <Tooltip>{exploreDetail.charityDes}</Tooltip>
                                 }>
@@ -96,15 +100,19 @@ class Explore extends Component {
     render() {
 
         return (
-            // Explore page
+            // explore page
             <div className="container p-5">
                 <h2 className="mb-3">Explore</h2>
+
+                {/* featured communities */}
                 <h5>Featured Communities</h5>
                 <div className="card-deck">
                     <div className="row">
                         {this.renderCommunities(true)}
                     </div>
                 </div>
+
+                {/* non featured communities */}
                 <h5 className="mt-5">Our Communities</h5>
                 <div className="card-deck">
                     <div className="row">
@@ -112,7 +120,6 @@ class Explore extends Component {
                     </div>
                 </div>
             </div>
-
         );
     }
 }

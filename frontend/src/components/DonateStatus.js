@@ -7,7 +7,9 @@ function DonateStatus({community}) {
     const [show, setShow] = useState(true);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
     return (
+        // pop up modal showing donation success message
         <>
             <Modal
                 show={show}

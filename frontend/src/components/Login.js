@@ -14,8 +14,10 @@ function Login(props) {
         event.preventDefault();
         login(username, password)
             .then(() => {
-                props.onLoginSuccess(); // Set authentication status in parent component
-                navigate('/explore'); // Navigate to explore
+                // set authentication status in parent component
+                props.onLoginSuccess();
+                // navigate to explore
+                navigate('/explore');
             })
             .catch(error => {
                 console.error('Login failed:', error);
@@ -24,7 +26,7 @@ function Login(props) {
     };
 
     return (
-        // Login page
+        // login page
         <div className="container p-5">
             <div className="col-lg-6 col-md-12 mt-5">
                 <div className="d-flex align-items-center">
@@ -50,15 +52,12 @@ function Login(props) {
                     <p id="loginError" className="text-danger mt-3 mb-0"></p>
                     <button type="submit" className="btn btn-primary px-5 mt-4">Login</button>
 
-
-
                 </form>
                 <div className="mt-4">
                     <small className="text-muted">Don’t have an account? <a href="#">Sign up</a></small>
                 </div>
             </div>
         </div>
-
     )
 }
 

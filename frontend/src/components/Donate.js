@@ -28,9 +28,7 @@ class Donate extends Component {
             });
     }
 
-
-
-
+    // send donation form inputs to backend
     makeDonation = (event) => {
         event.preventDefault();
         const amount = document.getElementById("amount").value;
@@ -52,12 +50,12 @@ class Donate extends Component {
 
 
     render() {
-
         const {donateStatus, community, communityNav} = this.state;
         return (
             // Donate page
             <div className="container p-5">
 
+                {/* breadcrumb */}
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <LinkContainer to={`/explore`}>
@@ -74,38 +72,39 @@ class Donate extends Component {
                     <h5 className="mb-2">Your help means a lot!</h5>
                     <h2 className="mb-2">Donate to {community.cotmName}</h2>
 
+                    {/* donation form */}
                     <form onSubmit={this.makeDonation}>
                         <div className="form-group mt-5">
                             <label>Amount</label>
-                            <input type="number" className="form-control" name="amount" id="amount"
+                            <input type="number" className="form-control" id="amount"
                                    min="0.5" max="100000" step="0.01" placeholder="20" required/>
                         </div>
                         <div className="form-group mt-3">
                             <label>Full Name</label>
-                            <input type="text" className="form-control" name="name" required/>
+                            <input type="text" className="form-control" id="name" required/>
                         </div>
                         <div className="form-group mt-3">
                             <label>Card Number</label>
-                            <input type="text" className="form-control" name="card" placeholder="1212121212121212"
+                            <input type="text" className="form-control" id="card" placeholder="1212121212121212"
                                    minLength="8" maxLength="19" pattern="\d*" required/>
                         </div>
                         <div className="form-row d-flex flex-wrap">
                             <div className="form-group mt-3 me-2">
                                 <label>Expiry Date</label>
-                                <input type="text" className="form-control" name="expiry" placeholder="MMYY"
+                                <input type="text" className="form-control" id="expiry" placeholder="MMYY"
                                        minLength="4" maxLength="4" pattern="\d*" required/>
                             </div>
                             <div className="form-group mt-3">
                                 <label>CVV/CVC</label>
-                                <input type="text" className="form-control" name="cvv/cvc" placeholder="123"
+                                <input type="text" className="form-control" id="cvv" placeholder="123"
                                        minLength="3" maxLength="3" pattern="\d*"
                                        required/>
                             </div>
-
                         </div>
 
                         <p id="donateError" className="text-danger mt-3 mb-0"></p>
 
+                        {/* back and submit button */}
                         <div className="mt-4">
                             <LinkContainer to={`/explore/${communityNav}`}>
                                 <button className="btn btn-outline-primary px-5 py-2 me-2">Back</button>
@@ -115,11 +114,9 @@ class Donate extends Component {
                     </form>
                 </div>
                 {donateStatus ? <DonateStatus community={community.name}/> : null}
-
             </div>
         )
     }
-
 }
 
 export default Donate;

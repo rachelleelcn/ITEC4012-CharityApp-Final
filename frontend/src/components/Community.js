@@ -23,7 +23,6 @@ class Community extends Component {
         }
     }
 
-
     componentDidMount() {
         //fetch community details
         communityDetails(this.state.id)
@@ -55,10 +54,12 @@ class Community extends Component {
     }
 
 
+    // inform backend user left community
     leaveCommunity() {
         communityLeave(this.state.id)
             .then(response => {
                 if (response.ok) {
+                    // update frontend member count and button state
                     const newState = {...this.state.community, joined: false, member: this.state.community.member - 1};
                     this.setState({community: newState});
                 } else {
@@ -70,10 +71,12 @@ class Community extends Component {
             });
     }
 
+    // inform backend user joined community
     joinCommunity() {
         communityJoin(this.state.id)
             .then(response => {
                 if (response.ok) {
+                    // update frontend member count and button state
                     const newState = {...this.state.community, joined: true, member: this.state.community.member + 1};
                     this.setState({community: newState});
                 } else {
@@ -85,15 +88,18 @@ class Community extends Component {
             });
     }
 
+    // track comment input
     handleInputChange = (e) => {
         this.setState({newCommentText: e.target.value});
     }
 
+    // inform backend of new user comment
     addComment = (event) => {
         event.preventDefault();
         const {newCommentText} = this.state;
         communityAddComment(newCommentText, this.state.id)
             .then(newComment => {
+                // update frontend comments array
                 const newState = [...this.state.comments, newComment];
                 this.setState({
                     comments: newState,
@@ -105,6 +111,7 @@ class Community extends Component {
             });
     }
 
+    // render charities
     renderCharities = () => {
         const charities = this.state.charities;
         const listItems = [];
@@ -129,6 +136,7 @@ class Community extends Component {
         return listItems;
     }
 
+    // render comments
     renderComments = () => {
         const comments = this.state.comments;
         const listItems = [];
@@ -149,8 +157,10 @@ class Community extends Component {
     render() {
         const {community, newCommentText, communityNav} = this.state;
         return (
-            // Account page
+            // community page
             <div className="container p-5">
+
+                {/* breadcrumb */}
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <LinkContainer to={`/explore`}>
@@ -165,21 +175,24 @@ class Community extends Component {
                         <h2 className="mb-3">{community.name}</h2>
                         <p>{community.member} Members</p>
 
+                        {/* join/leave button */}
                         {community.joined ?
                             (<button className="btn btn-outline-primary px-5"
                                      onClick={() => this.leaveCommunity()}>Leave</button>) :
                             (<button className="btn btn-primary px-5"
                                      onClick={() => this.joinCommunity()}>Join</button>)
                         }
-
-
                     </div>
+
+                    {/* last month's results */}
                     <div className="card py-3 px-4 mt-4">
                         <p className="my-1">Last month’s result ({community.lastMonth})</p>
                         <p className="my-1"><strong>{community.lastCharity}</strong></p>
                         <p className="my-1">Donated ${community.lastAmount} in total</p>
                     </div>
                 </div>
+
+                {/* charity of the month details */}
                 <div className="row my-5">
                     <div className="col-lg-6 pb-5">
                         <h6 className="">Charity of the Month</h6>
@@ -192,16 +205,18 @@ class Community extends Component {
                             <a className="btn btn-outline-primary px-5 py-2 me-2" href={community.cotmWebsite}
                                target="_blank">Visit Website</a>
 
+                            {/* donate button */}
                             <LinkContainer to={`/explore/${communityNav}/donate`}>
                                 <button className="btn btn-primary px-5 py-2">Donate Now</button>
                             </LinkContainer>
-
                         </div>
                     </div>
                     <div className="col-lg-6">
                         <img className="img-fluid" src={community.cotmImage} alt="Cotm image"/>
                     </div>
                 </div>
+
+                {/* comment section */}
                 <h5 className="">Words of Support</h5>
                 <ul className="list-group list-group-flush col-lg-12 mt-3">
                     {this.renderComments()}
@@ -212,6 +227,7 @@ class Community extends Component {
                     <button type="submit" className="btn btn-outline-primary px-5 py-2 my-3">Share</button>
                 </form>
 
+                {/* charities */}
                 <h5 className="mt-5">Our Charities</h5>
                 <div className="card-columns">
                     <div className="row">

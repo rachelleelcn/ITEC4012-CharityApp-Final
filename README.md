@@ -4,6 +4,7 @@
 https://github.com/rachelleelcn/ITEC4012-CharityApp.git
 
 ## Steps to get this django app running on your own server
+## Backend
 1) Open a terminal and navigate to the folder you want to create your project in (e.g. `cd ~Documents/Code`)
 2) Clone this repository with `git clone https://github.com/rachelleelcn/ITEC4012-CharityApp.git`
 3) Open the repository with PyCharm. You can do this by going file->open and selecting the cloned folder called `ITEC4012_CharityApp`
@@ -18,6 +19,7 @@ https://github.com/rachelleelcn/ITEC4012-CharityApp.git
 12) On the terminal, navigate to `ITEC4012_CharityAppo` and run `python manage.py migrate`
 13) Run the server by clicking the play button for the run configuration you set up
 14) Navigate to 127.0.0.1:8000! Your app should load.
+## Frontend
 
 ## Features of the Charity App
 1) Login system (login, sign up, logout)
@@ -35,3 +37,9 @@ https://github.com/rachelleelcn/ITEC4012-CharityApp.git
 ## References
 1) Community categories and charities reference to CanadaHelps https://www.canadahelps.org/en/
 2) Donation system's credit card integration uses Stripe API https://stripe.com/docs/api
+
+## Implementations
+
+## User accounts (for testing)
+1) User account (username: user1, password: user1test1234)
+2) 1) Admin account (username: admin, password: admintest1234)
